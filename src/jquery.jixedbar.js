@@ -36,9 +36,9 @@
 				};
 			var options = $.extend(defaults, options), // merge defaults and options object
                 /* IE6 detection method */
-                ie6 = (navigator.appName == "Microsoft Internet Explorer" && parseInt(navigator.appVersion) == 4 && navigator.appVersion.indexOf("MSIE 6.0") != -1),
+                ie6 = $.browser.msie && parseInt($.browser.version, 10) == 6,
                 /* var ie7 = window.XMLHttpRequest; // simple way to detect IE7 (see variable below) */
-                ie7 = (document.all && !window.opera && window.XMLHttpRequest), // ...but I guess this is a much more accurate method
+                ie7 = $.browser.msie && parseInt($.browser.version, 10) == 7, // ...but I guess this is a much more accurate method
                 button_active = false, // active button flag
                 active_button_name = "", // name of current active button
                 $elem_obj; // reference to bar's element
@@ -384,14 +384,11 @@
 							if (tooltipTitle != "") { // show a tooltip if it is not empty
 								// create tooltip wrapper; fix IE6's float double-margin bug
 								barTooltipWrapperID = barTooltipID + "_wrapper";
-								$("<div />", {id: barTooltipWrapperID}).appendTo("#jx-ttip-con-id");
+								$("<div />", {id: barTooltipWrapperID})
+                                    .appendTo("#jx-ttip-con-id");
 								// create tooltip div element and put it inside the wrapper
-								$("<div />", {id: barTooltipID}).appendTo("#" + barTooltipWrapperID);
-
-								// tooltip default style
-								$("#" + barTooltipID).css({
-									"float": "left"
-								});
+								$("<div />", {id: barTooltipID, style:"float:left"})
+                                    .appendTo("#" + barTooltipWrapperID);
 
 								// theme for show/unhide tooltip
 								if ((defaults.showOnTop) && !($.browser.msie && ie6)) {

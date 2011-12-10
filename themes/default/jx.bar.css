@@ -77,7 +77,6 @@
 }
 
 .jx-bar-button li {
-	font-family:Verdana, Arial, Helvetica, sans-serif;
 	font-size:11px;
 	cursor:pointer;
 	padding:4px 8px 4px 8px;
@@ -150,7 +149,6 @@
 	padding:5px 10px 5px 10px;
 	color:#fff;
 	background-color:#36393D;
-	font-family:Verdana, Arial, Helvetica, sans-serif;
 	font-size:11px;
 }
 
@@ -162,7 +160,6 @@
 
 /*----- nav menu -----*/
 .jx-nav-menu {
-	font-family:Verdana, Arial, Helvetica, sans-serif;
 	font-size:11px;
 	padding:2px;
 	background-color:#eee;
@@ -202,7 +199,6 @@
 
 /* active menu button */
 .jx-nav-menu-active {
-	font-family:Verdana, Arial, Helvetica, sans-serif;
 	font-size:11px;
 	cursor:pointer;
 	background-color:#ccc;
