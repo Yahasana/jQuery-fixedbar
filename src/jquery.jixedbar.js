@@ -5,11 +5,12 @@
  * Version 0.0.5 (Development)
  *
  * Copyright (c) 2009-2010 Ryan Yonzon, http://ryan.rawswift.com/
+ * Copyright (c) 2011 Sumh (42424861@qq.com)
  * Dual licensed under the MIT and GPL licenses:
  * http://www.opensource.org/licenses/mit-license.php
  * http://www.gnu.org/licenses/gpl.html
  *
- * Last update - September 21, 2010
+ * Last update - Dec 10, 2011
  */
 
 (function($) { // start jixedbar's anonymous function
@@ -19,22 +20,22 @@
 		// jixedbar plugin method
 		jixedbar: new function(options) {
 			var constants = { // constant variables, magic variables that'll make the bar stick on the bottom or the top portion of any browser
-					constOverflow: "hidden",
-					constBottom: "0px"
-				};
-			var defaults = { // default options
-					showOnTop: false, // show bar on top, instead of default bottom
-					transparent: false, // enable/disable bar's transparent effect
-					opacity: 0.9, // default bar opacity
-					opaqueSpeed: "fast", // default opacity speed effect
-					slideSpeed: "fast", // default slide effect
-					roundedCorners: true, // rounded corners only works on FF, Chrome, Latest Opera and Safari
-					roundedButtons: true, // only works on FF, Chrome, Latest Opera and Safari
-					menuFadeSpeed: 250, // menu fade effect
-					tooltipFadeSpeed: "slow", // tooltip fade effect
-					tooltipFadeOpacity: 0.8 // tooltip fade opacity effect
-				};
-			var options = $.extend(defaults, options), // merge defaults and options object
+                constOverflow: "hidden",
+                constBottom: "0px"
+            },
+            defaults = { // default options
+                showOnTop: false, // show bar on top, instead of default bottom
+                transparent: false, // enable/disable bar's transparent effect
+                opacity: 0.9, // default bar opacity
+                opaqueSpeed: "fast", // default opacity speed effect
+                slideSpeed: "fast", // default slide effect
+                roundedCorners: true, // rounded corners only works on FF, Chrome, Latest Opera and Safari
+                roundedButtons: true, // only works on FF, Chrome, Latest Opera and Safari
+                menuFadeSpeed: 250, // menu fade effect
+                tooltipFadeSpeed: "slow", // tooltip fade effect
+                tooltipFadeOpacity: 0.8 // tooltip fade opacity effect
+            },
+            options = $.extend(defaults, options), // merge defaults and options object
                 /* IE6 detection method */
                 ie6 = $.browser.msie && parseInt($.browser.version, 10) == 6,
                 /* var ie7 = window.XMLHttpRequest; // simple way to detect IE7 (see variable below) */
@@ -86,9 +87,9 @@
 
 					// create hide container and button
 					if ($(".jx-bar-button-right", this).exists()) { // check if there are currently an item on the right side portion of the bar
-						$("<ul />", {id: "jx-hid-con-id"}).insertBefore($obj.find(".jx-bar-button-right:first")); // insert hide/show button "before" the existing item and let the "float right" do its magic
+						$("<ul />", {id: "jx-hid-con-id", "class": "jx-bar-button-right"}).insertBefore($obj.find(".jx-bar-button-right:first")); // insert hide/show button "before" the existing item and let the "float right" do its magic
 					} else { // else just append it and it'll automatically set to the right side of the bar
-						$("<ul />", {id: "jx-hid-con-id"}).appendTo(this);
+						$("<ul />", {id: "jx-hid-con-id", "class": "jx-bar-button-right"}).appendTo(this);
 					}
 
                     if ($.browser.msie) {
@@ -97,8 +98,7 @@
                     }
 
 					// insert the hide button indicator and add appropriate CSS class
-					$("#jx-hid-con-id").html('<li alt="Hide toolbar"><a id="jx-hid-btn-id" class="' + hideIndicator + '"></a></li>')
-                        .addClass("jx-bar-button-right");
+					$("#jx-hid-con-id").html('<li alt="Hide toolbar"><a id="jx-hid-btn-id" class="' + hideIndicator + '"></a></li>');
 
 					// insert hide button separator and CSS class
 					$("<span />", {id: "jx-hid-sep-id", "class": "jx-hide-separator"}).insertAfter("#jx-hid-con-id");
@@ -124,13 +124,9 @@
 
 					// set location: top or bottom
 					if (defaults.showOnTop) {
-						$obj.css({
-							"top": constants["constBottom"]
-						});
+						$obj.css({"top": constants["constBottom"]});
 					} else {
-						$obj.css({
-							"bottom": constants["constBottom"]
-						});
+						$obj.css({"bottom": constants["constBottom"]});
 					}
 
 					// add bar style (theme)
@@ -331,11 +327,11 @@
 								});
 
 								// theme for tooltip (theme)
-								if ((defaults.showOnTop) && !($.browser.msie && ie6)) { // IE6 workaround; Don't add tooltip pointer if IE6
+								if (defaults.showOnTop && !($.browser.msie && ie6)) { // IE6 workaround; Don't add tooltip pointer if IE6
 									$("<div />", {"class": "jx-tool-point-dir-up"}).appendTo("#" + barTooltipID);
-								}
-
-                                $("<div />", {html: tooltipTitle, "class": "jx-bar-button-tooltip"}).appendTo("#" + barTooltipID);
+								} else {
+                                    $("<div />", {html: tooltipTitle, "class": "jx-bar-button-tooltip"}).appendTo("#" + barTooltipID);
+                                }
 
 								if ((!defaults.showOnTop) && !($.browser.msie && ie6)) { // IE6 workaround; Don't add tooltip pointer if IE6
 									$("<div />", {"class": "jx-tool-point-dir-down"}).appendTo("#" + barTooltipID);
@@ -357,7 +353,6 @@
 										"display": "none"
 									});
 								}
-
 							}
 						},
 						function () { // hover out method event
@@ -393,9 +388,9 @@
 								// theme for show/unhide tooltip
 								if ((defaults.showOnTop) && !($.browser.msie && ie6)) {
 									$("<div />", {"class": "jx-tool-point-dir-up"}).appendTo("#" + barTooltipID);
-								}
-
-                                $("<div />", {html: tooltipTitle, "class": "jx-bar-button-tooltip"}).appendTo("#" + barTooltipID);
+								} else {
+                                    $("<div />", {html: tooltipTitle, "class": "jx-bar-button-tooltip"}).appendTo("#" + barTooltipID);
+                                }
 
 								if ((!defaults.showOnTop) && !($.browser.msie && ie6)) {
 									$("<div />", {"class": "jx-tool-point-dir-down"}).appendTo("#" + barTooltipID);
@@ -421,10 +416,8 @@
 							}
 						},
 						function () { // out event
-							var elemID = $(this).attr("id"), // get ID (whether there is an ID or none)
-                                barTooltipID = elemID + "jx-ttip-id", // set a tooltip ID
-                                barTooltipWrapperID = barTooltipID + "_wrapper";
-							$("#" + barTooltipID).remove(); // remove tooltip element
+							var elemID = $(this).prop("id"), // get ID (whether there is an ID or none)
+                                barTooltipWrapperID = elemID + "jx-ttip-id_wrapper";
 							$("#" + barTooltipWrapperID).remove(); // remove tooltip's element DIV wrapper
 						}
 					);
@@ -502,10 +495,8 @@
 						part.find("a:first").click(function() {
 							var elem = $(this), // get ID (whether there is an ID or none)
                                 parent = $(this).parent(),
-                                barTooltipID = elem.prop("id") + "jx-ttip-id", // set a tooltip ID
-                                barTooltipWrapperID = barTooltipID + "_wrapper";
+                                barTooltipWrapperID = elem.prop("id") + "jx-ttip-id_wrapper";
 
-							$("#" + barTooltipID).remove(); // remove tooltip element
 							$("#" + barTooltipWrapperID).remove(); // remove tooltip's element DIV wrapper
 
 							if ((button_active) && (active_button_name == elem.prop("name"))) { // is this an active button?
@@ -573,16 +564,17 @@
 									parent.addClass("jx-nav-menu-active-rounded");
 								}
 
-								if (active_button_name != "") { // remove/hide any active button (on-clicked state)
-									$("a[name='" + active_button_name + "']").parent().removeClass("jx-nav-menu-active");
-									$("a[name='" + active_button_name + "']").parent().removeClass("jx-nav-menu-active-rounded");
-
-									if (defaults.showOnTop) { // change button indicator (depends on the current bar's position)
+								if (active_button_name != "") {
+                                    // change button indicator (depends on the current bar's position)
+									if (defaults.showOnTop) {
 										buttonIndicator = "jx-arrow-down";
 									} else {
 										buttonIndicator = "jx-arrow-up";
 									}
-									$("a[name='" + active_button_name + "']").parent().find("div").prop("class", buttonIndicator);
+									// remove/hide any active button (on-clicked state)
+									$("a[name='" + active_button_name + "']").parent()
+                                        .removeClass("jx-nav-menu-active jx-nav-menu-active-rounded")
+                                        .find("div").prop("class", buttonIndicator);
 								}
 
 								button_active = true; // change button's active state
@@ -655,14 +647,13 @@
 			this.createObjectContainer = function(name) {
 				name = typeof(name) != 'undefined' ? name : "jx-obj-con-id"; // default object container name
 				// create custom object container
-				var obj = $("<div />", {id: name})
-				.css({ // CSS for tooltip container (invisible to viewer(s))
+				var obj = $("<div />", {id: name, css:{ // CSS for tooltip container (invisible to viewer(s))
 					"height": "auto",
 					"margin-left": "0px",
 					"width": "100%", // use entire width
 					"overflow": constants["constOverflow"],
 					"position": pos
-				}).appendTo("body"); // create div element and append in html body
+				}}).appendTo("body"); // create div element and append in html body
 
 				// set custom object container: top or bottom
 				if (defaults.showOnTop) { // show on top?
