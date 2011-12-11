@@ -36,13 +36,13 @@
                 tooltipFadeOpacity: 0.8 // tooltip fade opacity effect
             },
             options = $.extend(defaults, options), // merge defaults and options object
-                /* IE6 detection method */
-                ie6 = $.browser.msie && parseInt($.browser.version, 10) == 6,
-                /* var ie7 = window.XMLHttpRequest; // simple way to detect IE7 (see variable below) */
-                ie7 = $.browser.msie && parseInt($.browser.version, 10) == 7, // ...but I guess this is a much more accurate method
-                button_active = false, // active button flag
-                active_button_name = "", // name of current active button
-                $elem_obj; // reference to bar's element
+            /* IE6 detection method */
+            ie6 = $.browser.msie && parseInt($.browser.version, 10) == 6,
+            /* var ie7 = window.XMLHttpRequest; // simple way to detect IE7 (see variable below) */
+            ie7 = $.browser.msie && parseInt($.browser.version, 10) == 7, // ...but I guess this is a much more accurate method
+            button_active = false, // active button flag
+            active_button_name = "", // name of current active button
+            $elem_obj; // reference to bar's element
 
 			/**
 			 * public methods
@@ -66,13 +66,13 @@
 
 					$elem_obj = $obj; // set bar's element object for public method use
 
-					if ($obj.checkCookie("JXID")) { // check if cookie already exists
-						if ($obj.readCookie("JXHID") == "true") {
+					if ($obj.getCookie("JXID")) { // check if cookie already exists
+						if ($obj.getCookie("JXHID") == "true") {
 							this.hideBar = true; // hide bar
 						}
 					} else { // else drop cookie
-						$obj.createCookie("JXID", $obj.genRandID()); // set random ID and create cookie
-						$obj.createCookie("JXHID", false); // set bar hide to false then create cookie
+						$obj.setCookie("JXID", $obj.genRandID()); // set random ID and create cookie
+						$obj.setCookie("JXHID", false); // set bar hide to false then create cookie
 					}
 
 					// set html and body style for jixedbar to work
@@ -98,18 +98,19 @@
                     }
 
 					// insert the hide button indicator and add appropriate CSS class
-					$("#jx-hid-con-id").html('<li alt="Hide toolbar"><a id="jx-hid-btn-id" class="' + hideIndicator + '"></a></li>');
+					$("#jx-hid-con-id")
+                        .html('<li alt="Hide toolbar"><a id="jx-hid-btn-id" class="' + hideIndicator + '"></a></li>')
+                        // insert hide button separator and CSS class
+                        .after($("<span />", {id: "jx-hid-sep-id", "class": "jx-hide-separator"}));
 
-					// insert hide button separator and CSS class
-					$("<span />", {id: "jx-hid-sep-id", "class": "jx-hide-separator"}).insertAfter("#jx-hid-con-id");
 
 					// add click event on hide button
 					$("#jx-hid-btn-id").parent().click(function() {
 						$("#jx-menu-con-id").fadeOut();
 						$obj.slideToggle(defaults.slideSpeed, function() {
-							$obj.createCookie("JXHID", true); // set bar hide to true
-							if (!$obj.checkCookie("JXID")) { // check if cookie JXID exists, if not create one
-								$obj.createCookie("JXID", $obj.genRandID()); // set random ID and drop cookie
+							$obj.setCookie("JXHID", true); // set bar hide to true
+							if (!$obj.getCookie("JXID")) { // check if cookie JXID exists, if not create one
+								$obj.setCookie("JXID", $obj.genRandID()); // set random ID and drop cookie
 							}
 							$("#jx-uhid-con-id").slideToggle(defaults.slideSpeed);
 						});
@@ -211,16 +212,12 @@
 
 					// check if we need to hide the bar (based on cookie)
 					if (this.hideBar) {
-						$obj.css({
-							"display": "none" // do not display the main bar
-						});
+						$obj.css({"display": "none"}); // do not display the main bar						
 					}
 
 					// check if we need to hide the show/unhide button (based on cookie)
 					if (!this.hideBar) {
-						$("#jx-uhid-con-id").css({
-							"display": "none" // do not display the show/unhide button
-						});
+						$("#jx-uhid-con-id").css({"display": "none"}); // do not display the show/unhide button						
 					}
 
 					// create/append the show/unhide button item
@@ -246,9 +243,9 @@
 					// add click event on show/unhide button
 					$("#jx-uhid-con-id").click(function() {
 						$(this).slideToggle(defaults.slideSpeed, function() {
-							$obj.createCookie("JXHID", false); // set bar hide to false
-							if (!$obj.checkCookie("JXID")) { // check if cookie JXID exists, if not create one
-								$obj.createCookie("JXID", $obj.genRandID()); // set random ID and drop cookie
+							$obj.setCookie("JXHID", false); // set bar hide to false
+							if (!$obj.getCookie("JXID")) { // check if cookie JXID exists, if not create one
+								$obj.setCookie("JXID", $obj.genRandID()); // set random ID and drop cookie
 							}
 							$obj.slideToggle(defaults.slideSpeed); // slide toggle effect
 							if (active_button_name) { // check if we have an active button (menu button)
@@ -680,66 +677,25 @@ jQuery.fn.exists = function(){return !!this.length};
 /**
  * Create a cookie
  */
-jQuery.fn.createCookie = function(cookie_name, value) {
-	var expiry_date = new Date(2037, 01, 01); // virtually, never expire!
-	document.cookie = cookie_name + "=" + escape(value) + ";expires=" + expiry_date.toUTCString();
-};
-
-/**
- * Check cookie
- */
-jQuery.fn.checkCookie = function(cookie_name) {
-	if (document.cookie.length > 0) {
-  		cookie_start = document.cookie.indexOf(cookie_name + "=");
-  			if (cookie_start != -1) {
-    			cookie_start = cookie_start + cookie_name.length + 1;
-    			cookie_end = document.cookie.indexOf(";", cookie_start);
-    			if (cookie_end == -1) {
-    				cookie_end = document.cookie.length;
-    				return true;
-    			}
-			}
-  	}
-	return false;
-};
-
-/**
- * Extract cookie value
- */
-jQuery.fn.extractCookieValue = function(value) {
-	  if ((endOfCookie = document.cookie.indexOf(";", value)) == -1) {
-	     endOfCookie = document.cookie.length;
-	  }
-	  return unescape(document.cookie.substring(value, endOfCookie));
+jQuery.fn.setCookie = function(key, value) {
+	var expire = new Date(2037, 01, 01); // virtually, never expire!
+	document.cookie = key + "=" + escape(value) + ";expires=" + expire.toUTCString();
 };
 
 /**
  * Read cookie
  */
-jQuery.fn.readCookie = function(cookie_name) {
-	  var numOfCookies = document.cookie.length;
-	  var nameOfCookie = cookie_name + "=";
-	  var cookieLen = nameOfCookie.length;
-	  var x = 0;
-	  while (x <= numOfCookies) {
-	        var y = (x + cookieLen);
-	        if (document.cookie.substring(x, y) == nameOfCookie)
-	           return (this.extractCookieValue(y));
-	           x = document.cookie.indexOf(" ", x) + 1;
-	           if (x == 0){
-	              break;
-	           }
-	  }
-	  return (null);
+jQuery.fn.getCookie = function(key) {
+    var value = document.cookie.match('\b?' + key + '=([^;]*)');
+    return value ? unescape(value[1]) : null;
 };
 
 /**
  * Generate random ID
  */
 jQuery.fn.genRandID = function() {
-	var id = "";
-	var str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-	for(var i=0; i < 24; i++) {
+	var id = "", str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789", i;
+	for(i=0; i < 24; i++) {
 		id += str.charAt(Math.floor(Math.random() * str.length));
 	}
     return id;
