@@ -161,7 +161,7 @@
 
 					// check for alt attribute and set it as button text
 					$obj.find("img").each(function() {
-						if ($obj.attr("alt") != "") { // if image's ALT attribute is not empty then do the code below
+						if ($obj.attr("alt")) { // if image's ALT attribute is not empty then do the code below
 							altName = "&nbsp;" + $obj.attr("alt"); // set button text using the image's ALT attribute
 							$obj.parent().append(altName); // append it
 						}
@@ -185,7 +185,7 @@
 					 */
 					$("<div />", {
                         id: "jx-uhid-con-id",
-                        "class": "jx-show",
+                        "class": "jx-show jx-bar-button", // add CSS style on show/unhide button based on the current theme
                         css:{
                             "overflow": constants["constOverflow"],
                             "position": pos,
@@ -224,10 +224,11 @@
 					}
 
 					// create/append the show/unhide button item
-					$("<ul />", {id: "jx-uhid-itm-id"}).appendTo($("#jx-uhid-con-id"));
-
-					// add the show/unhide item ("Show toolbar" button)
-					$("#jx-uhid-itm-id").html('<li alt="Show toolbar"><a id="jx-uhid-btn-id" class="' + unhideIndicator + '"></a></li>');
+					$("<ul />", {
+                        id: "jx-uhid-itm-id",
+                        // add the show/unhide item ("Show toolbar" button)
+                        html:'<li alt="Show toolbar"><a id="jx-uhid-btn-id" class="' + unhideIndicator + '"></a></li>'
+					}).appendTo("#jx-uhid-con-id");
 
 					// show/unhide container and button style
 					if (defaults.roundedCorners) {
@@ -237,7 +238,7 @@
 							$("#jx-uhid-con-id").addClass("jx-bar-rounded-tl jx-bar-rounded-tr");
 						}
 					}
-					$("#jx-uhid-con-id").addClass("jx-bar-button"); // add CSS style on show/unhide button based on the current theme
+
 					if (defaults.roundedButtons) { // additional CSS style for rounded buttons
 						$("#jx-uhid-con-id").addClass("jx-bar-button-rounded");
 					}
@@ -250,7 +251,7 @@
 								$obj.createCookie("JXID", $obj.genRandID()); // set random ID and drop cookie
 							}
 							$obj.slideToggle(defaults.slideSpeed); // slide toggle effect
-							if (active_button_name != "") { // check if we have an active button (menu button)
+							if (active_button_name) { // check if we have an active button (menu button)
 								$("#jx-menu-con-id").fadeIn(); // if we have then do fade in effect
 							}
 
@@ -272,14 +273,15 @@
 					});
 
 					// create tooltip container
-					$("<div />", {id: "jx-ttip-con-id"}).appendTo("body"); // create div element and append in html body
-					$("#jx-ttip-con-id").css({ // CSS for tooltip container (invisible to viewer(s))
-						"height": "auto",
-						"margin-left": "0px",
-						"width": "100%", // use entire width
-						"overflow": constants["constOverflow"],
-						"position": pos
-					});
+					$("<div />", {
+                        id: "jx-ttip-con-id",
+                        css:{ // CSS for tooltip container (invisible to viewer(s))
+                            "height": "auto",
+                            "margin-left": "0px",
+                            "width": "100%", // use entire width
+                            "overflow": constants["constOverflow"],
+                            "position": pos
+                    }}).appendTo("body"); // create div element and append in html body
 
 					// set tooltip container: top or bottom
 					if (defaults.showOnTop) { // show on top?
@@ -308,13 +310,11 @@
 						function () { // hover in method event
 							var elem = $(this), // get ID (w/ or w/o ID, get it anyway)
                                 barTooltipID = elem.attr("id") + "jx-ttip-id", // set a tooltip ID
-                                tooltipTitle = elem.attr("title");
+                                // if no 'title' attribute then try 'alt' attribute
+                                // this prevents IE from showing its own tooltip
+                                tooltipTitle = elem.attr("title") || elem.attr("alt"),ulft_pad;
 
-							if ( ! tooltipTitle) { // if no 'title' attribute then try 'alt' attribute
-								tooltipTitle = elem.attr("alt"); // this prevents IE from showing its own tooltip
-							}
-
-							if (tooltipTitle != "") { // show a tooltip if it's not empty
+							if (tooltipTitle) { // show a tooltip if it's not empty
 								// create tooltip wrapper; fix IE6's float double-margin bug
 								barTooltipWrapperID = barTooltipID + "_wrapper";
 								$("<div />", {id: barTooltipWrapperID}).appendTo("#jx-ttip-con-id");
@@ -322,9 +322,7 @@
 								$("<div />", {id: barTooltipID}).appendTo("#" + barTooltipWrapperID);
 
 								// tooltip default style
-								$("#" + barTooltipID).css({
-									"float": "left"
-								});
+								$("#" + barTooltipID).css({"float": "left"});
 
 								// theme for tooltip (theme)
 								if (defaults.showOnTop && !($.browser.msie && ie6)) { // IE6 workaround; Don't add tooltip pointer if IE6
@@ -344,9 +342,9 @@
 								});
 
 								/* check for active buttons; tooltip behavior */
-								if (((elem.find("a:first").prop("name") == "") || (button_active == false))) {
+								if ( ! elem.find("a:first").prop("name") || (button_active == false)) {
 									$("#" + barTooltipID).fadeTo(defaults.tooltipFadeSpeed, defaults.tooltipFadeOpacity);
-								} else if (active_button_name != elem.find("a:first").prop("name")) {
+								} else if (active_button_name !== elem.find("a:first").prop("name")) {
 									$("#" + barTooltipID).fadeTo(defaults.tooltipFadeSpeed, defaults.tooltipFadeOpacity);
 								} else { // we got an active button here! (clicked state)
 									$("#" + barTooltipID).css({ // prevent the tooltip from showing; if button if currently on-clicked state
@@ -357,9 +355,7 @@
 						},
 						function () { // hover out method event
 							var elemID = $(this).attr("id"), // get ID (whether there is an ID or none)
-                                barTooltipID = elemID + "jx-ttip-id", // set a tooltip ID
-                                barTooltipWrapperID = barTooltipID + "_wrapper";
-							$("#" + barTooltipID).remove(); // remove tooltip element
+                                barTooltipWrapperID = elemID + "jx-ttip-id_wrapper";
 							$("#" + barTooltipWrapperID).remove(); // remove tooltip's element DIV wrapper
 						}
 					);
@@ -369,30 +365,27 @@
 						function () { // in/over event
 							var elem = $(this), // get ID (w/ or w/o ID, get it anyway)
                                 barTooltipID = elem.prop("id") + "jx-ttip-id", // set a tooltip ID
-                                tooltipTitle = elem.attr("title"),
-                                barTooltipWrapperID;
+                                // if no 'title' attribute then try 'alt' attribute
+                                // this prevents IE from showing its own tooltip
+                                tooltipTitle = elem.attr("title") || elem.attr("alt"),
+                                barTooltipWrapperID,ulft_pad;
 
-							if ( ! tooltipTitle) { // if no 'title' attribute then try 'alt' attribute
-								tooltipTitle = elem.attr("alt"); // this prevents IE from showing its own tooltip
-							}
-
-							if (tooltipTitle != "") { // show a tooltip if it is not empty
+							if (tooltipTitle) { // show a tooltip if it is not empty
 								// create tooltip wrapper; fix IE6's float double-margin bug
 								barTooltipWrapperID = barTooltipID + "_wrapper";
-								$("<div />", {id: barTooltipWrapperID})
-                                    .appendTo("#jx-ttip-con-id");
+								$("<div />", {id: barTooltipWrapperID}).appendTo("#jx-ttip-con-id");
+
 								// create tooltip div element and put it inside the wrapper
-								$("<div />", {id: barTooltipID, style:"float:left"})
-                                    .appendTo("#" + barTooltipWrapperID);
+								$("<div />", {id: barTooltipID, style:"float:left"}).appendTo("#" + barTooltipWrapperID);
 
 								// theme for show/unhide tooltip
-								if ((defaults.showOnTop) && !($.browser.msie && ie6)) {
+								if (defaults.showOnTop && !($.browser.msie && ie6)) {
 									$("<div />", {"class": "jx-tool-point-dir-up"}).appendTo("#" + barTooltipID);
 								} else {
                                     $("<div />", {html: tooltipTitle, "class": "jx-bar-button-tooltip"}).appendTo("#" + barTooltipID);
                                 }
 
-								if ((!defaults.showOnTop) && !($.browser.msie && ie6)) {
+								if (!defaults.showOnTop && !($.browser.msie && ie6)) {
 									$("<div />", {"class": "jx-tool-point-dir-down"}).appendTo("#" + barTooltipID);
 								}
 
@@ -430,7 +423,7 @@
 								imgPath = elem.prop("src"),
 								altName = elem.prop("alt"),
 								srcText = elem.parent();
-								if (altName == "") { // workaround for IE6 bug: Menu item text does not show up on the popup menu
+								if ( ! altName) { // workaround for IE6 bug: Menu item text does not show up on the popup menu
 									altName = "&nbsp;&nbsp;" + elem.prop("title");
 								}
 								srcText.html( // wrap with span element
@@ -448,6 +441,7 @@
                                 screenWidth = screen.width(), // get current screen width
                                 centerScreen = (screenWidth / 2) * (1), // get current screen center
                                 marginLeft = centerScreen - $obj.width() / 2; // re-calculate and adjust bar's position
+
 							$obj.css({"margin-left": marginLeft}); // do it!
 
 							// set unhide/show button
@@ -474,8 +468,7 @@
 					});
 
 					// create menu ID
-					i = 1;
-					$("li", $obj).find("ul").each(function() {
+					$("li", $obj).find("ul").each(function(i) {
                         var elem = $(this),
                             part = elem.parent(),
                             // check what position to use
@@ -564,7 +557,7 @@
 									parent.addClass("jx-nav-menu-active-rounded");
 								}
 
-								if (active_button_name != "") {
+								if (active_button_name) {
                                     // change button indicator (depends on the current bar's position)
 									if (defaults.showOnTop) {
 										buttonIndicator = "jx-arrow-down";
@@ -586,8 +579,6 @@
 							}
 							return false; // prevent normal click action
 						});
-
-						i = i + 1;
 					});
 
 					// nav items click event
@@ -684,7 +675,7 @@ $.fn.extend({ // extend jQuery.fn object
 /**
  * Element/selector checker - check if element/selector exists
  */
-jQuery.fn.exists = function(){return jQuery(this).length>0;};
+jQuery.fn.exists = function(){return !!this.length};
 
 /**
  * Create a cookie
